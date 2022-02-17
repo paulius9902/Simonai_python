@@ -1,12 +1,18 @@
-import numpy as np
+import locale
+locale.setlocale(locale.LC_ALL, '')
 
-ini_array1 = np.array([[1, 2, 3], [2, 4, 5], [1, 2, 3]])
+vardai1 = ['Augustas', 'Žilvinas', 'Česlovas', 'Ąžuolas', 'Mindaugas', 'Kęstutis']
+vardai2 = ['Lina', 'Živilė', 'Kamilė', 'Rasa', 'Jolita']
+vardai3 = ['Jonas', 'Petras']
 
-# printing initial arrays
-print("initial array", str(ini_array1))
+print('Nesurikiuotas sąrašas: ')
+joinedlist = vardai1 + vardai2 + vardai3
+print(joinedlist)
+print()
 
-# Multiplying arrays
-result = ini_array1.flatten()
+print('Surikiuotas sąrašas: ')
+sortedlist = sorted(joinedlist, key=locale.strxfrm)
+print(sortedlist)
+print()
 
-# printing result
-print("New resulting array: ", result)
+print("Ilgis: {}, pirmas elementas: {}, paskutinis elementas: {}, sąrašas: {}".format(len(sortedlist), sortedlist[0], sortedlist[len(sortedlist)-1], sortedlist))

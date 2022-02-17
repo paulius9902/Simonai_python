@@ -7,4 +7,4 @@ if __name__ == '__main__':
             elif int(n) > 0:
                 print(n)
         except ValueError:
-            print("Įveskite skaičių!")
+            print("Neteisingai įvestas skaičius!")
