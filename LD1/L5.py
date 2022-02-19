@@ -1,5 +1,5 @@
 import locale
-locale.setlocale(locale.LC_ALL, '')
+locale.setlocale(locale.LC_ALL, '') #lokalė LT rašmenims
 
 vardai1 = ['Augustas', 'Žilvinas', 'Česlovas', 'Ąžuolas', 'Mindaugas', 'Kęstutis']
 vardai2 = ['Lina', 'Živilė', 'Kamilė', 'Rasa', 'Jolita']
