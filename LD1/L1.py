@@ -1,3 +1,4 @@
+#dfdg
 def func(num):
     if type(num) == int or type(num) == float:
         if i > 0:
