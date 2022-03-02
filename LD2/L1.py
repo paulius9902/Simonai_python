@@ -13,20 +13,30 @@ with open('tickers.txt') as f:
 random_lines = random.sample(lines, 10)
 
 #   3
-for x in random_lines:
-    print()
-    print("Kompanija: " + x)
-    aapl_df = yf.download(x,
-                      start='2000-01-01',
-                      end=datetime.today(),
-                      progress=False,)
-    print(aapl_df.head())
-    print(aapl_df.info())
+#for x in random_lines:
+    #print()
+    #print("Kompanija: " + x)
+    #aapl_df = yf.download(x,
+                      #start='2000-01-01',
+                      #end=datetime.today(),
+                      #progress=False,)
+    #print(aapl_df.head())
+    #print(aapl_df.info())
 
     #   4
-    ticker = yf.Ticker(x)
-    aapl_df['High'].plot(title=x)
-    #plt.show()
+    #ticker = yf.Ticker(x)
+    #aapl_df['High'].plot(title=x)
+    # plt.show()
 
-    #5!!!!!!!!!!!!!!!
-    random_lines = random.sample(lines, 5)
+#   5
+volumes = []
+for x in random_lines:
+    aapl = yf.Ticker(x)
+    vol = aapl.info["volume"]
+    volumes.append(vol)
+    print(vol)
+
+df = pd.DataFrame(list(zip(random_lines, volumes)),
+               columns =['company', 'volume'])
+
+print(df.sort_values('volume'))
