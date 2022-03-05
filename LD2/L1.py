@@ -30,7 +30,9 @@ random_lines = random.sample(lines, 10)
 
 #   5
 volumes = []
+
 for x in random_lines:
+    print(x)
     aapl = yf.Ticker(x)
     vol = aapl.info["volume"]
     volumes.append(vol)
@@ -38,5 +40,10 @@ for x in random_lines:
 
 df = pd.DataFrame(list(zip(random_lines, volumes)),
                columns =['company', 'volume'])
-
-print(df.sort_values('volume'))
+five_companies = df.sort_values('volume').tail(5)['company'].tolist()
+for x in five_companies:
+    ticker = yf.Ticker(x)
+    aapl_df = ticker.history(period="5y")
+    aapl_df['Close'].plot(title=x)
+    plt.show()
+    #print(aapl_df)
