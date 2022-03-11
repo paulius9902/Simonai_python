@@ -2,7 +2,9 @@ import yfinance as yf
 import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
+import os
 
+print(os.getcwd())
 sns.set_style('whitegrid')
 ticker_list = ['LMT', 'MSCI']
 
@@ -23,5 +25,7 @@ data_df.columns = ticker_list  # change columns to ticker name
 
 data_df.plot(figsize=(12,6))
 plt.ylabel('Adj Close')
-plt.savefig(r"C:\Users\Kompas\Documents\GitHub\Simonai_python\uzduotis3\LMI_MSI")
+my_path = os.path.dirname(os.path.abspath(__file__))
+my_file = r'uzduotis3\graph.png'
+plt.savefig(os.path.join(my_path, my_file))
 plt.show()
