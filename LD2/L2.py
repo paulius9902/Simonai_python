@@ -1,9 +1,15 @@
 import random
 import os
+import numpy as np
 import pandas as pd
 import yfinance as yf
 from datetime import datetime
+from pandas_datareader import data as wb
 import matplotlib.pyplot as plt
+import seaborn as sns
+import glob
+from dominate import document
+from dominate.tags import *
 
 #   1
 with open('tickers.txt') as f:
@@ -48,10 +54,9 @@ for x in five_companies:
     aapl_df = ticker.history(start='2012-01-01', end='2017-12-31')
     aapl_df['Close'].plot(title=x)
     plt.show()
-    #print(aapl_df)
 
     #6 Pasižiūrėti informaciją apie kiekvieną kompaniją Yahoo Finance portale.
-#Pasirinktos įmonės ['NCBDF', 'PM', 'EA', 'NKE', 'JNJ']
+#Pasirinktos įmonės ['HEN3.DE', 'BMW.DE', 'HAS', 'ML.PA', 'LMT']
 #NCBDF veikia klientų aptarnavimo srityje, organizuoja poilsines veiklas;
 #PM gamina tabako gaminius, cigaretes;
 #EA veikia komunikacijos srityje, gamina vaizdo žaidimus ir kitas multimedijas;
@@ -60,27 +65,99 @@ for x in five_companies:
 
     #7
 #Su kuriuo rinkos indeksu lygintumėte kiekvienos iš šių kompanijų akcijų grąžą?
-#NCBDF lyginama su S&P500
-#PM lyginama su MSCI, globaliu indeksu
-#EA lyginama su S&P500
-#NKE lyginama su MSCI, globaliu indeksu
-#JNJ lyginama su S&P500 indeksu, kadangi veikia tarptautinėje rinkoje.
+#HAS lyginama su S&P500 (^GSPC)
+#LMT lyginama su MSCI, globaliu indeksu
+
 
 #Sukurkite savo darbiniame kataloge katalogą "uzduotis3" ir dviejų pasirinktų kompanijų palyginimo su dviem skirtingais rinkos indeksais
 # grafikus išsaugokite šiame kataloge (tą atlikti galima tokiu būdu:
-#pav = DataFrame.plot().get_figure()
-#pav.savefig(išsaugojimo kelias)).
 
-#Sukuriama direktorija
-directory = "uzduotis3"
-parent_dir = r"C:\Users\Kompas\Documents\GitHub\Simonai_python"
-mode = 0o666
-path = os.path.join(parent_dir, directory)
-os.mkdir(path, mode)
-print("Directory '% s' created" % directory)
+#Pasirenkamos kompanijos HAS ir LMT. HAS lyginama su S&P500 (^GSPC), o LMT - su MSCI.
+print(os.getcwd())
+sns.set_style('whitegrid')
+ticker_list = ['LMT', 'MSCI']
+ticker_list1 = ['HAS', '^GSPC']
 
-#Pasirenkamos kompanijos HAS ir LMT. HAS lyginama su S&P500, o LMT - su MSCI.
-ticker = yf.Ticker('S&P500', 'MSCI')
-data = ticker.history(start='2012-01-01', end='2017-12-31')
-plt.plot(data)
+data_df = pd.DataFrame()
+for i in range(0, len(ticker_list)):
+    ticker = ticker_list[i]
+    df_yahoo = yf.download(ticker,
+                           start='2012-01-01',
+                           end='2017-12-31',
+                           progress=False)  # download the data
+    data_df = pd.concat([
+        data_df,
+        df_yahoo['Adj Close']
+    ], axis=1)  # store data in one dataframe
+
+data_df.columns = ticker_list  # change columns to ticker name
+
+data_df.plot(figsize=(12,6))
+plt.ylabel('Adj Close')
+my_path = os.path.dirname(os.path.abspath(__file__))
+my_file = r'uzduotis3\graph.png'
+plt.savefig(os.path.join(my_path, my_file))
 plt.show()
+
+data_df1 = pd.DataFrame()
+for i in range(0, len(ticker_list1)):
+    ticker1 = ticker_list1[i]
+    df_yahoo1 = yf.download(ticker1,
+                           start='2012-01-01',
+                           end='2017-12-31',
+                           progress=False)  # download the data
+    data_df1 = pd.concat([
+        data_df1,
+        df_yahoo1['Adj Close']
+    ], axis=1)  # store data in one dataframe
+
+data_df1.columns = ticker_list1  # change columns to ticker name
+
+data_df1.plot(figsize=(12,6))
+plt.ylabel('Adj Close')
+my_path = os.path.dirname(os.path.abspath(__file__))
+my_file = r'uzduotis3\graph.png'
+plt.savefig(os.path.join(my_path, my_file))
+plt.show()
+
+#8 Tame pačiame kataloge programiškai sukurkite html failą (t.y. tekstinis failas su plėtiniu html) ir į jį įrašykite kodą,
+# atvaizduojantį šiuos du grafikus kartu su antrašte ir savo komentarais html puslapyje.
+
+photos = glob.glob('uzduotis3\*.png')
+
+with document(title='Photos') as doc:
+    h1('Photos')
+    h2('Grafikai')
+    for path in photos:
+        div(img(src=os.path.basename(path)), _class='photo')
+
+
+with open(r'uzduotis3\gallery.html', 'w') as f:
+    f.write(doc.render())
+
+#9 Apskaičiuokite 5-oje užduotyje atsirinktų kompanijų metines grąžas. Paskaičiuokite N portfelių variantų, sudarytų iš
+# šių kompanijų akcijų, grąžas tokiu būdu:
+
+#Pasirinktos įmonės ['HEN3.DE', 'BMW.DE', 'HAS', 'ML.PA', 'LMT']
+#Paskaičiuojamos metinės grąžos:
+
+#sukuriamas dataframe grąžų paskaičiavimui
+df_fivecompanies = pd.DataFrame()
+for c in five_companies:
+    df_fivecompanies[c] = wb.DataReader(c, data_source='yahoo', start='2012-01-01', end='2017-12-31')['Adj Close']
+print(df_fivecompanies[c])
+
+#paskaičiuojamos grąžos
+ret = (df_fivecompanies / df_fivecompanies.shift(1)) - 1
+annual_ret = ret.mean() * 250
+print(str(round(annual_ret * 100, 3)) + " %")
+
+#Paskaičiuojamos 10 portfelių variantų grąžos
+
+for x in range(10):
+    weights = np.random.random()
+    weights /= np.sum(weights)
+    returns = np.dot(annual_ret, weights)
+
+#Atvaizduokite portfelio gražų stulpelinę diagramą (pagalvokite, kokiu būdu išsaugoti portfelio grąžąs)
+#Stulpelinių diagramų braižymo pavyzdys - faile "matplotlib - bar charts.ipynb"
