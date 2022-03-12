@@ -41,9 +41,9 @@ currentPrice = []
 for x in random_lines:
     print(x)
     aapl = yf.Ticker(x)
-    vol = aapl.info["currentPrice"]
-    currentPrice.append(vol)
-    print(vol)
+    price = aapl.info["currentPrice"]
+    currentPrice.append(price)
+    print(price)
 
 df = pd.DataFrame(list(zip(random_lines, currentPrice)),
                columns =['company', 'currentPrice'])
@@ -57,11 +57,11 @@ for x in five_companies:
 
     #6 Pasižiūrėti informaciją apie kiekvieną kompaniją Yahoo Finance portale.
 #Pasirinktos įmonės ['HEN3.DE', 'BMW.DE', 'HAS', 'ML.PA', 'LMT']
-#NCBDF veikia klientų aptarnavimo srityje, organizuoja poilsines veiklas;
-#PM gamina tabako gaminius, cigaretes;
-#EA veikia komunikacijos srityje, gamina vaizdo žaidimus ir kitas multimedijas;
-#NKE veikia klientų aptarnavimo srityje, gamina avalynę;
-#JNJ veikia sveikatos sektoriuje, gamina medikamentus, farmaciją;
+#HEN3.DE veikia klientų aptarnavimo srityje, gamina namų apyvokos prekes;
+#BMW.DE gamina automobilius, veikia automobilių pramonėje;
+#HAS organizuoja pramogines keliones, laisvalaikio veiklas;
+#ML.PA gamina automobilių dalis;
+#LMT veikia aviacijos svityje;
 
     #7
 #Su kuriuo rinkos indeksu lygintumėte kiekvienos iš šių kompanijų akcijų grąžą?
@@ -153,11 +153,28 @@ annual_ret = ret.mean() * 250
 print(str(round(annual_ret * 100, 3)) + " %")
 
 #Paskaičiuojamos 10 portfelių variantų grąžos
-
+return_list = []
 for x in range(10):
-    weights = np.random.random()
+    weights = np.random.random(5)
     weights /= np.sum(weights)
     returns = np.dot(annual_ret, weights)
+    return_list.append(returns)
+    print(return_list)
+f = open("returns.txt", "w+")
+for i in return_list:
+    f.write(str(i) + "\n")
+f.close()
+with open("returns.txt") as file:
+    lines = [line.rstrip() for line in file]
 
 #Atvaizduokite portfelio gražų stulpelinę diagramą (pagalvokite, kokiu būdu išsaugoti portfelio grąžąs)
-#Stulpelinių diagramų braižymo pavyzdys - faile "matplotlib - bar charts.ipynb"
+
+x_idx = np.arange(len(lines))
+plt.bar(x_idx, return_list)
+plt.xlabel("Portfelis")
+plt.ylabel("Portfelio grąža")
+plt.title("Investicinių portfelių grąžos")
+my_path = os.path.dirname(os.path.abspath(__file__))
+my_file = r'uzduotis3\portfelių_grąžos.png'
+plt.savefig(os.path.join(my_path, my_file))
+plt.show()
